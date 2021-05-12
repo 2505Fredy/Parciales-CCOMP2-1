@@ -11,8 +11,8 @@ const int columnaTab = 9;
 
 
 // Las posiciones (i,j) del robot las manejaré dentro de un arreglo de 2 enteros. Pensaba hacerlo todo con "struct" pero no se nos enseñó aún, entonces lo hice con un arreglo de enteros. 
-// La inicializo con los valores que recibo del usuario o valores ya predeterminados
-void inicializarPosicion(int punto[2], int x, int y){
+// La inicializo con los valores que recibo del usuario o valores ya predeterminados. No inicialicé la dirección porque es tipo char, y si declaro mi matriz como char, no puede contener números mayores al 9. En tal sentido inicialicé la dirección dentro de main().
+void inicializarPosicion(int punto[2], int x, int y){ 
   punto[0]=x;
   punto[1]=y;
 }
