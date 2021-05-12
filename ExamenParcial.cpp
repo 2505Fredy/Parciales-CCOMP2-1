@@ -2,9 +2,13 @@
 #include <cstring> // strlen()
 using namespace std;
 
-//variables globales
+//variables y constantes globales
 char der[5]{'N', 'E', 'S', 'O', 'N'};
 char izq[5]{'N', 'O', 'S', 'E', 'N'};
+const int filaTab = 9;
+const int columnaTab = 9;
+//NOTA: ES IMPERATIVO DECLARAR EL NUMERO DE FILAS Y COLUMNAS EN LAS 2 FILAS ANTERIORES, PUESTO QUE SE TRABAJA CON MATRICES Y NO SE PUEDE TRABAJAR CON VARIABLES AL PASAR COMO PARÁMETRO A UNA FUNCIÓN UNA MATRIZ, EL NUMERO DEBE SER CONSTANTE. RECOMIENDO QUE SE TRABAJE CON NÚMEROS DEL 0 AL 9, PUESTO QUE, DESPUÉS DE 2 DÍGITOS LA IMAGEN SE DEFORMA.
+
 
 // Las posiciones (i,j) del robot las manejaré dentro de un arreglo de 2 enteros. Pensaba hacerlo todo con "struct" pero no se nos enseñó aún, entonces lo hice con un arreglo de enteros. 
 // La inicializo con los valores que recibo del usuario o valores ya predeterminados
@@ -14,7 +18,7 @@ void inicializarPosicion(int punto[2], int x, int y){
 }
 
 
-// Función booleana que veerifica que la posición del robot esté dentro de los límites del tablero. Es decir si está fuera del tablero devuelve "true"; caso contrario, "false".
+// Función booleana que verifica que la posición del robot esté dentro de los límites del tablero. Es decir, si está fuera del tablero devuelve "true"; caso contrario, "false".
 bool salioMapa(int fila, int col, int robot[2]){
   if (robot[0]<0 || robot[0]>fila){
     return true;
@@ -79,28 +83,64 @@ void validacion(int fila, int col){
   }
 }
 
+void printTablero(int fila, int col, char matriz[filaTab+1][columnaTab+1]){  
+  cout << "  ";
+  int filas= ((fila+1)*2)+1, columnas= ((col+1)*2)+1, filIndex=0;
+  for (int i=0; i<col+1; i++) cout << i << ' ';
+  cout << endl;
+  for (int j=0; j< filas; j++){
+    if (j%2==0){
+      cout << ' ';
+      for (int k=0; k<columnas; k++) cout << '-';
+      cout << endl;
+    }
+    else if (j%2==1){
+      cout << filIndex;
+      int colIndex=0;
+      for (int l=0; l<columnas; l++){
+        if (l%2==0) cout << '|';
+        else{ 
+          cout << matriz[filIndex][colIndex];
+          colIndex++;
+          }
+      }
+      filIndex++;
+      cout << endl;
+    }
+  }
+}
+
+// Marca la posición final del robot en el tablero y le asigna la letra que corresponde a su dirección final.
+void marcadoTab(int filRob, int colRob, char direction, char matrix[][columnaTab+1]){
+  for (int i=0; i < filaTab+1; i++){
+    for (int j=0; j < columnaTab+1; j++){
+      if (i==filRob && j==colRob) matrix[i][j]= direction;
+      else matrix[i][j]=' ';
+    }
+  }
+}
+
 int main() {
-  int filRob, colRob, filTab, colTab; // Inicializo las variables de fila y columna del robot, al igual que el número de filas y columnas del tablero(mapa).
+  int filRob, colRob; // Inicializo las variables de fila y columna del robot, al igual que el número de filas y columnas del tablero(mapa).
   char direction='N'; // Declaro la dirección del robot mediante un carácter, inicializandola en "N" norte.
   cout << "Ingrese la fila del robot: ";
   cin >> filRob;
   cout << "Ingrese la columna del robot: ";
   cin >> colRob;
-  cout << "Ingrese número de filas del mapa: ";
-  cin >> filTab;
-  cout << "Ingrese número de columnas del mapa: ";
-  cin >> colTab;
-  validacion(filTab, colTab);
+  validacion(filaTab, columnaTab);
   cout << "Ingrese la dirección del robot: \n(N=norte; S=sur; E= este; O= oeste)\n";
   cin >> direction;
-  filTab++; // Le sumé +1 porque en la imagen se cuenta desde cero incluyendo el límite de filas. Osea si se pone 5, el número de filas es 0,1,2,3,4,5= 6 filas.
-  colTab++; // Le sumé +1 porque en la imagen se cuenta desde cero incluyendo el límite de columnas.
+  char matrix[filaTab+1][columnaTab+1]; //Creo una matriz[tablero] con constantes definidas al principio, ya que al pasar como argumento a una función no se puede pasar con variables
   int posicion[2]{0,0}; // Declaro la posición del robot en el tablero, en las posiciones (0,0)inicialmente.
   inicializarPosicion(posicion, filRob, colRob); // Inicializo la posición del robot, con los valores ingresados.
   char movimientos[41]; // El número máximo de movimientos es 40. Trabajé con un valor constante. 
   cout << "Ingrese los movimientos a ejecutar: ";
   cin >> movimientos;
-  if (movimiento(movimientos, posicion, direction, filTab, colTab)) cout << "No se salió del mapa.";
-  else cout << "Salió del mapa.";
-  cout << endl << "Posición: " << posicion[0] << ";" << posicion[1] << endl << "Dirección: " << direction << endl;
+  if (movimiento(movimientos, posicion, direction, filaTab+1, columnaTab+1)) cout << "No salió del mapa.\n";
+  else{
+    cout << "Salió del mapa.\n";
+    exit(-1);
+  }
+  marcadoTab(posicion[0], posicion[1], direction, matrix);
+  printTablero(filaTab, columnaTab, matrix);
 }
